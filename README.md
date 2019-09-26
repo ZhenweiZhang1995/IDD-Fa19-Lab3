@@ -165,9 +165,11 @@ void setColor(float red, float  green, float blue)
 
 **a. Does it matter what actions are assigned to which state? Why?**
 
-**b. Why is the code here all in the setup() functions and not in the loop() functions?**
+**b. Why is the code here all in the setup() functions and not in the loop() functions?**  
+Because read and write only needs to be performed once, so it is not necessary to use loop() here.
 
-**c. How many byte-sized data samples can you store on the Atmega328?**
+**c. How many byte-sized data samples can you store on the Atmega328?**  
+1024 Bytes
 
 **d. How would you get analog data from the Arduino analog pins to be byte-sized? How about analog data from the I2C devices?**
 
