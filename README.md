@@ -155,8 +155,6 @@ void setColor(float red, float  green, float blue)
 }
 ```
 
-**b. Upload your merged code to your lab report repository and link to it here.**
-
 ## Optional. Graphic Display
 
 **Take a picture of your screen working insert it here!**
