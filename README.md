@@ -155,10 +155,6 @@ void setColor(float red, float  green, float blue)
 }
 ```
 
-### 3. IR Proximity Sensor
-
-**a. Describe the voltage change over the sensing range of the sensor. A sketch of voltage vs. distance would work also. Does it match up with what you expect from the datasheet?**
-
 **b. Upload your merged code to your lab report repository and link to it here.**
 
 ## Optional. Graphic Display
