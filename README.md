@@ -163,7 +163,8 @@ void setColor(float red, float  green, float blue)
  
 ### 1. Reading and writing values to the Arduino EEPROM
 
-**a. Does it matter what actions are assigned to which state? Why?**
+**a. Does it matter what actions are assigned to which state? Why?**  
+Yes, order matters. It is not possible to do Write/Clear/Read becuase read will not be able to get anything after clear.
 
 **b. Why is the code here all in the setup() functions and not in the loop() functions?**  
 Because read and write only needs to be performed once, so it is not necessary to use loop() here.
@@ -171,11 +172,106 @@ Because read and write only needs to be performed once, so it is not necessary t
 **c. How many byte-sized data samples can you store on the Atmega328?**  
 1024 Bytes
 
-**d. How would you get analog data from the Arduino analog pins to be byte-sized? How about analog data from the I2C devices?**
+**d. How would you get analog data from the Arduino analog pins to be byte-sized? How about analog data from the I2C devices?**  
+Arduino outputs integer from 0 to 1023, by using map function we can normalize it to 0 - 255.  
+In terms of I2C devices, this is the same.
 
-**e. Alternately, how would we store the data if it were bigger than a byte? (hint: take a look at the [EEPROMPut](https://www.arduino.cc/en/Reference/EEPROMPut) example)**
+**e. Alternately, how would we store the data if it were bigger than a byte? (hint: take a look at the [EEPROMPut](https://www.arduino.cc/en/Reference/EEPROMPut) example)**  
+If it is bigger than a byte, use `EEPROM.put()` to write the data and then use `sizeof()` to calculate the size and move the address to the next byte. 
 
-**Upload your modified code that takes in analog values from your sensors and prints them back out to the Arduino Serial Monitor.**
+
+**Upload your modified code that takes in analog values from your sensors and prints them back out to the Arduino Serial Monitor.**  
+```
+// Basic demo for accelerometer readings from Adafruit LIS3DH
+
+#include <Wire.h>
+#include <SPI.h>
+#include <Adafruit_LIS3DH.h>
+#include <Adafruit_Sensor.h>
+#include <LiquidCrystal.h>
+#include "Adafruit_VCNL4010.h"
+
+// Used for software SPI
+#define LIS3DH_CLK 13
+#define LIS3DH_MISO 12
+#define LIS3DH_MOSI 11
+// Used for hardware & software SPI
+#define LIS3DH_CS 10
+
+// software SPI
+//Adafruit_LIS3DH lis = Adafruit_LIS3DH(LIS3DH_CS, LIS3DH_MOSI, LIS3DH_MISO, LIS3DH_CLK);
+// hardware SPI
+//Adafruit_LIS3DH lis = Adafruit_LIS3DH(LIS3DH_CS);
+// I2C
+Adafruit_LIS3DH lis = Adafruit_LIS3DH();
+
+int redPin = 11;
+int greenPin = 10;
+int bluePin = 9;
+
+// initialize the library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+Adafruit_VCNL4010 vcnl;
+
+void setup(void) {
+#ifndef ESP8266
+  while (!Serial);     // will pause Zero, Leonardo, etc until serial console opens
+#endif
+
+  Serial.begin(9600);
+  Serial.println("LIS3DH test!");
+  
+  if (! lis.begin(0x18)) {   // change this to 0x19 for alternative i2c address
+    Serial.println("Couldnt start");
+    while (1);
+  }
+  Serial.println("LIS3DH found!");
+  
+  lis.setRange(LIS3DH_RANGE_4_G);   // 2, 4, 8 or 16 G!
+  
+  Serial.print("Range = "); Serial.print(2 << lis.getRange());  
+  Serial.println("G");
+
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+
+  
+}
+
+void loop() {
+  lis.read();      // get X Y and Z data at once
+  // Then print out the raw data
+  Serial.print("X:  "); Serial.print(lis.x); 
+  Serial.print("  \tY:  "); Serial.print(lis.y); 
+  Serial.print("  \tZ:  "); Serial.print(lis.z); 
+
+  /* Or....get a new sensor event, normalized */ 
+  sensors_event_t event; 
+  lis.getEvent(&event);
+  
+  /* Display the results (acceleration is measured in m/s^2) */
+  Serial.print("\t\tX: "); Serial.print(event.acceleration.x);
+  Serial.print(" \tY: "); Serial.print(event.acceleration.y); 
+  Serial.print(" \tZ: "); Serial.print(event.acceleration.z); 
+  Serial.println(" m/s^2 ");
+
+  Serial.println();
+
+  // Print to LCD
+  lcd.setCursor(0,0);
+  lcd.print("X:" + String(lis.x));
+  lcd.print(" Y:" + String(lis.y));
+  lcd.print("Z:" + String(lis.z));
+  setColor(event.acceleration.x*25,event.acceleration.y*25,event.acceleration.z*25);
+  // acceleration value times 25 because RGB value is about 0 - 255 (which is about 10 * 25)
+ 
+  delay(200); 
+}
+```
+
 
 ### 2. Design your logger
  
