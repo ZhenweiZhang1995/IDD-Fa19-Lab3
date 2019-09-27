@@ -276,6 +276,7 @@ void loop() {
 ### 2. Design your logger
  
 **a. Insert here a copy of your final state diagram.**
+![Diagram](https://github.com/ZhenweiZhang1995/IDD-Fa19-Lab3/blob/master/diagram.jpeg)
 
 ### 3. Create your data logger!
  
