@@ -280,5 +280,5 @@ void loop() {
 
 ### 3. Create your data logger!
  
-**a. Record and upload a short demo video of your logger in action.**
+**a. Record and upload a short demo video of your logger in action.**  
 [Video](https://youtu.be/zIE4gQ5cHQg)
